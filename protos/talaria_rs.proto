@@ -1,0 +1,17 @@
+syntax = "proto3";
+package talaria_rs;
+
+service Ingress {
+  rpc Ingest(IngestRequest) returns (IngestResponse);
+ // rpc IngestWithTable(IngestWithTableRequest) returns (IngestResponse) {}
+}
+
+// IngestRequest represents an ingestion request.
+message IngestRequest {
+  oneof data {
+    bytes parquet = 5; // A parquet file
+  }
+}
+
+// IngestResponse represents an ingestion response.
+message IngestResponse {}
