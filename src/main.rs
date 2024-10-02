@@ -5,6 +5,8 @@ use tonic::transport::Server;
 
 mod server;
 mod talaria_rs;
+mod writer;
+mod schema;
 
 mod talaria_proto {
     include!("talaria_rs.rs");

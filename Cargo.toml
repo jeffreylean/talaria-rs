@@ -5,11 +5,16 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.89"
+arrow = "53.0.0"
 chitchat = "0.7.0"
+parquet = "53.0.0"
 prost = "0.13.3"
-tokio = {version = "1.40.0", features = ["sync", "macros", "fs"]}
+tokio = { version = "1.40.0", features = ["sync", "macros", "fs"] }
 tonic = "0.12.3"
 tonic-reflection = "0.12.3"
+serde = { version = "1.0.210", features = ["derive"] }
+prost-build = "0.13.3"
+uuid = { version = "1.10.0", features = ["v4"] }
 
 [build-dependencies]
 tonic-build = "0.9.1"
