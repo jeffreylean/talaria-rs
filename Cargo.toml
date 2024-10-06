@@ -15,6 +15,10 @@ tonic-reflection = "0.12.3"
 serde = { version = "1.0.210", features = ["derive"] }
 prost-build = "0.13.3"
 uuid = { version = "1.10.0", features = ["v4"] }
+serde_yaml = "0.9.34"
+async-trait = "0.1.83"
+datafusion = "42.0.0"
+dashmap = "6.1.0"
 
 [build-dependencies]
 tonic-build = "0.9.1"

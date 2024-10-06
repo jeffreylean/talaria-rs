@@ -3,13 +3,17 @@ use talaria_proto::FILE_DESCRIPTOR_SET;
 use talaria_rs::ingress_server::IngressServer;
 use tonic::transport::Server;
 
-mod server;
-mod talaria_rs;
-mod writer;
+mod buffer;
 mod schema;
+mod server;
+mod table;
+mod timeseries;
+
+#[path = "generated/talaria_rs.rs"]
+mod talaria_rs;
 
 mod talaria_proto {
-    include!("talaria_rs.rs");
+    include!("generated/talaria_rs.rs");
 
     pub(crate) const FILE_DESCRIPTOR_SET: &[u8] =
         tonic::include_file_descriptor_set!("talaria_descriptor");

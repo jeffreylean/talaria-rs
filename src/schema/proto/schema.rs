@@ -1,1 +1,0 @@
-pub async fn proto_schema_to_arrow() -> anyhow::Result<()> {}
