@@ -4,6 +4,7 @@ use talaria_rs::ingress_server::IngressServer;
 use tonic::transport::Server;
 
 mod buffer;
+mod memtable;
 mod schema;
 mod server;
 mod table;

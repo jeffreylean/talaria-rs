@@ -1,21 +1,26 @@
-use std::sync::Arc;
+use std::sync::{atomic::AtomicUsize, Arc};
 
+use anyhow::Result;
 use arrow::{
     array::RecordBatch,
     datatypes::{DataType, Field, Schema, SchemaRef},
 };
 use async_trait::async_trait;
+use crossbeam_skiplist::{SkipList, SkipMap};
 use datafusion::{catalog::TableProvider, physical_plan::ExecutionPlan};
 use serde::Deserialize;
 use serde_yaml::Value;
 
 use crate::table::Appender;
+use bytes::Bytes;
 
 #[derive(Debug)]
 pub struct Table {
+    id: usize,
     name: Arc<str>,
     schema: Schema,
-    storage: Vec<RecordBatch>,
+    map: Arc<SkipMap<Bytes, Bytes>>,
+    approximate_size: Arc<AtomicUsize>,
 }
 
 #[derive(Deserialize)]
@@ -26,7 +31,7 @@ enum ColumnType {
     Int64,
 }
 
-pub fn new(schema_src: String, name: String) -> anyhow::Result<Table> {
+pub fn new(id: usize, schema_src: String, name: String) -> anyhow::Result<Table> {
     let f = std::fs::File::open(schema_src)?;
     let val: Value = serde_yaml::from_reader(f)?;
     let mut fields: Vec<Field> = Vec::new();
@@ -47,14 +52,21 @@ pub fn new(schema_src: String, name: String) -> anyhow::Result<Table> {
     Ok(Table {
         name: name.into(),
         schema: Schema::new(fields),
-        storage: Vec::new(),
+        map: Arc::new(SkipMap::new()),
+        id,
+        approximate_size: Arc::new(AtomicUsize::new(0)),
     })
 }
 
-#[async_trait]
-impl Appender for Table {
-    async fn append(&mut self, batch: RecordBatch) {
-        self.storage.push(batch);
+impl Table {
+    pub fn put(&self, key: &[u8], value: &[u8]) -> Result<()> {
+        self.map
+            .insert(Bytes::copy_from_slice(key), Bytes::copy_from_slice(value));
+        self.approximate_size.fetch_add(
+            key.len() + value.len(),
+            std::sync::atomic::Ordering::Relaxed,
+        );
+        Ok(())
     }
 }
 
@@ -67,6 +79,7 @@ mod test {
     #[test]
     fn test_new() {
         let table = new(
+            1,
             "/Users/jeffreylean/Project/personal/talaria-rs/etc/test.yaml".to_string(),
             "test".to_string(),
         )

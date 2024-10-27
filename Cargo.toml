@@ -19,6 +19,8 @@ serde_yaml = "0.9.34"
 async-trait = "0.1.83"
 datafusion = "42.0.0"
 dashmap = "6.1.0"
+crossbeam-skiplist = "0.1.3"
+bytes = "1.8.0"
 
 [build-dependencies]
 tonic-build = "0.9.1"
